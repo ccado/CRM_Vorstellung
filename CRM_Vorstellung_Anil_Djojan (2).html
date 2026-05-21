@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM-Produktstrategie v3 | DACH-Mittelstand</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  /* ================================================================
+     ANLEITUNG ZUM BEARBEITEN DIESER DATEI
+     ================================================================
+     Diese HTML-Datei kannst du mit jedem Texteditor öffnen:
+     - VS Code (empfohlen) → kostenlos auf https://code.visualstudio.com
+     - Notepad++ (Windows) → kostenlos
+     - TextEdit (Mac) → bereits installiert
+     - Sublime Text, Atom, etc.
+
+     WAS WO IST:
+     - FARBEN ändern: siehe :root unten (CSS Custom Properties)
+     - TEXTE ändern: Suche nach dem Text, ersetze ihn direkt
+     - TABS hinzufügen/entfernen: Suche nach <button class="tab" und 
+       <div class="section" → beide müssen passende data-tab/id haben
+     - DIAGRAMME ändern: Im <script>-Bereich am Ende, jeweils new Chart(...)
+     - ZAHLEN in KPIs: Suche nach <div class="kpi-value">
+
+     TIPP: Nach jeder Änderung Datei speichern und im Browser neu laden (F5).
+     ================================================================ */
+
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f6f2;
+    --bg-tertiary: #efece4;
+    --bg-elevated: #ffffff;
+    --text-primary: #1f1e1c;
+    --text-secondary: #5f5e5a;
+    --text-tertiary: #888780;
+    --border-tertiary: rgba(0,0,0,0.08);
+    --border-secondary: rgba(0,0,0,0.18);
+    --color-info-bg: #E6F1FB;
+    --color-info-text: #0C447C;
+    --color-info-border: #378ADD;
+    --color-success-bg: #EAF3DE;
+    --color-success-text: #27500A;
+    --color-success-border: #1D9E75;
+    --color-warning-bg: #FAEEDA;
+    --color-warning-text: #633806;
+    --color-warning-border: #BA7517;
+    --color-danger-bg: #FCEBEB;
+    --color-danger-text: #791F1F;
+    --color-danger-border: #D85A30;
+    --color-purple-bg: #EFE9FB;
+    --color-purple-text: #3A2470;
+    --color-purple-border: #7F5BD3;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.08);
+    --gradient-1: linear-gradient(135deg, #ffffff 0%, #f7f6f2 100%);
+    --gradient-success: linear-gradient(135deg, #EAF3DE 0%, #d9ebc4 100%);
+    --gradient-danger: linear-gradient(135deg, #FCEBEB 0%, #f7d8d8 100%);
+    --gradient-info: linear-gradient(135deg, #E6F1FB 0%, #d2e5f5 100%);
+    --gradient-warning: linear-gradient(135deg, #FAEEDA 0%, #f3dcb0 100%);
+    --gradient-purple: linear-gradient(135deg, #EFE9FB 0%, #ddd2f5 100%);
+  }
+
+  /* Dark Mode */
+  body.dark-mode {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #242422;
+    --bg-tertiary: #161614;
+    --bg-elevated: #2a2a28;
+    --text-primary: #f0efea;
+    --text-secondary: #b8b6b0;
+    --text-tertiary: #8a8884;
+    --border-tertiary: rgba(255,255,255,0.08);
+    --border-secondary: rgba(255,255,255,0.18);
+    --color-info-bg: #1a2c44;
+    --color-info-text: #93C5FD;
+    --color-success-bg: #1f3315;
+    --color-success-text: #A7D389;
+    --color-warning-bg: #3a2914;
+    --color-warning-text: #F4C682;
+    --color-danger-bg: #3a1818;
+    --color-danger-text: #F0A0A0;
+    --color-purple-bg: #281b48;
+    --color-purple-text: #C5B3F0;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    scroll-behavior: smooth;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem 5rem; }
+
+  /* === HERO === */
+  .hero {
+    padding: 2.5rem 2rem;
+    background: var(--gradient-1);
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-md);
+    border: 0.5px solid var(--border-tertiary);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(55,138,221,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero h1 { font-size: 28px; font-weight: 600; margin: 0 0 8px; letter-spacing: -0.5px; }
+  .hero p { font-size: 14px; color: var(--text-secondary); margin: 0; max-width: 800px; }
+  .hero .badge {
+    display: inline-block; font-size: 11px; padding: 4px 12px;
+    border-radius: 999px; background: var(--color-success-bg);
+    color: var(--color-success-text); font-weight: 600;
+    margin-bottom: 12px; letter-spacing: 0.05em; text-transform: uppercase;
+  }
+
+  /* === MODE TOGGLE === */
+  .mode-toggle {
+    position: fixed; top: 20px; right: 20px;
+    width: 44px; height: 44px;
+    border-radius: 50%; border: 0.5px solid var(--border-secondary);
+    background: var(--bg-primary); cursor: pointer; font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-md); z-index: 100;
+    transition: all 0.2s ease;
+  }
+  .mode-toggle:hover { transform: scale(1.08); box-shadow: var(--shadow-lg); }
+
+  /* === TABBAR === */
+  .tabbar {
+    display: flex; flex-wrap: wrap; gap: 4px;
+    margin-bottom: 1.5rem;
+    background: var(--bg-primary);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    position: sticky; top: 10px; z-index: 10;
+    box-shadow: var(--shadow-md);
+    border: 0.5px solid var(--border-tertiary);
+  }
+  .tab {
+    padding: 9px 14px; font-size: 13px; font-weight: 500;
+    background: transparent; border: none;
+    border-radius: var(--radius-sm); cursor: pointer;
+    color: var(--text-secondary); transition: all 0.2s ease;
+    position: relative;
+  }
+  .tab:hover { color: var(--text-primary); background: var(--bg-secondary); }
+  .tab.active {
+    color: var(--text-primary); background: var(--bg-secondary);
+    font-weight: 600;
+  }
+  .tab.active::after {
+    content: ''; position: absolute; bottom: -2px; left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 2px;
+    background: var(--color-info-border);
+    border-radius: 2px;
+  }
+
+  /* === SECTIONS === */
+  .section { display: none; padding: 0.5rem; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .section.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section h2 {
+    font-size: 24px; font-weight: 600;
+    margin: 0 0 6px; letter-spacing: -0.3px;
+  }
+  .section .sub {
+    font-size: 14.5px; color: var(--text-secondary);
+    margin: 0 0 1.75rem;
+  }
+
+  /* === KPI CARDS === */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 14px; margin-bottom: 1.5rem;
+  }
+  .kpi {
+    background: var(--bg-primary); border-radius: var(--radius-md);
+    padding: 16px 18px; border: 0.5px solid var(--border-tertiary);
+    box-shadow: var(--shadow-sm); transition: all 0.2s ease;
+    position: relative; overflow: hidden;
+  }
+  .kpi:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .kpi-label { font-size: 11.5px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; }
+  .kpi-value { font-size: 26px; font-weight: 600; line-height: 1.1; letter-spacing: -0.5px; }
+  .kpi-src { font-size: 10.5px; color: var(--text-tertiary); margin-top: 6px; }
+  .kpi-trend {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    margin-left: 6px; padding: 1px 6px; border-radius: 4px;
+  }
+  .kpi-trend.up { color: var(--color-success-text); background: var(--color-success-bg); }
+  .kpi-trend.down { color: var(--color-danger-text); background: var(--color-danger-bg); }
+
+  /* === CARDS === */
+  .card {
+    background: var(--bg-primary); border: 0.5px solid var(--border-tertiary);
+    border-radius: var(--radius-lg); padding: 18px 22px;
+    margin-bottom: 14px; box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease;
+  }
+  .card:hover { box-shadow: var(--shadow-md); }
+  .card-title { font-size: 16px; font-weight: 600; margin: 0 0 10px; }
+  .card-body { font-size: 14px; color: var(--text-secondary); line-height: 1.65; margin: 0; }
+
+  /* === PILLS === */
+  .pill {
+    display: inline-block; font-size: 11px; padding: 3px 10px;
+    border-radius: 999px; font-weight: 600; letter-spacing: 0.02em;
+  }
+  .pill-danger { background: var(--color-danger-bg); color: var(--color-danger-text); }
+  .pill-warning { background: var(--color-warning-bg); color: var(--color-warning-text); }
+  .pill-success { background: var(--color-success-bg); color: var(--color-success-text); }
+  .pill-info { background: var(--color-info-bg); color: var(--color-info-text); }
+  .pill-purple { background: var(--color-purple-bg); color: var(--color-purple-text); }
+
+  /* === CHARTS === */
+  .chart-wrap { position: relative; width: 100%; margin-bottom: 1rem; }
+
+  /* === TABLES === */
+  table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 1rem; }
+  table.data th {
+    text-align: left; font-weight: 600; padding: 11px 12px;
+    border-bottom: 1px solid var(--border-secondary);
+    font-size: 12px; color: var(--text-secondary);
+    background: var(--bg-secondary);
+    text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  table.data td {
+    padding: 11px 12px; border-bottom: 0.5px solid var(--border-tertiary);
+    vertical-align: top;
+  }
+  table.data tr { transition: background-color 0.15s ease; }
+  table.data tr:hover td { background: var(--bg-secondary); }
+  .source { font-size: 11.5px; color: var(--text-tertiary); font-style: italic; margin-top: 8px; }
+  .source a, .src-list a { color: var(--color-info-text); }
+
+  /* === VERDICT BOXES === */
+  .verdict {
+    padding: 20px 22px; border-radius: var(--radius-lg);
+    margin-bottom: 1rem; box-shadow: var(--shadow-sm);
+    border-left: 4px solid;
+  }
+  .verdict-yes { background: var(--gradient-success); border-left-color: var(--color-success-border); }
+  .verdict-no { background: var(--gradient-danger); border-left-color: var(--color-danger-border); }
+  .verdict-maybe { background: var(--gradient-warning); border-left-color: var(--color-warning-border); }
+  .verdict-info { background: var(--gradient-info); border-left-color: var(--color-info-border); }
+  .verdict-title { font-size: 17px; font-weight: 600; margin: 0 0 6px; }
+  .verdict-body { font-size: 14px; line-height: 1.65; margin: 0; }
+  .verdict-yes .verdict-title, .verdict-yes .verdict-body { color: var(--color-success-text); }
+  .verdict-no .verdict-title, .verdict-no .verdict-body { color: var(--color-danger-text); }
+  .verdict-maybe .verdict-title, .verdict-maybe .verdict-body { color: var(--color-warning-text); }
+  .verdict-info .verdict-title, .verdict-info .verdict-body { color: var(--color-info-text); }
+
+  /* === PERSONAS === */
+  .persona {
+    display: flex; gap: 16px; padding: 18px 20px;
+    background: var(--bg-primary); border: 0.5px solid var(--border-tertiary);
+    border-radius: var(--radius-lg); margin-bottom: 12px;
+    box-shadow: var(--shadow-sm); transition: all 0.2s ease;
+  }
+  .persona:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .persona-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 16px; flex-shrink: 0;
+  }
+  .persona-body { font-size: 13.5px; line-height: 1.65; }
+  .persona-name { font-size: 15.5px; font-weight: 600; color: var(--text-primary); margin: 0 0 2px; }
+  .persona-role { font-size: 12px; color: var(--text-secondary); margin: 0 0 10px; }
+
+  /* === INTERVIEW QUESTIONS === */
+  .interview-q {
+    padding: 14px 18px; background: var(--bg-secondary);
+    border-radius: var(--radius-md); margin-bottom: 8px;
+    font-size: 14px; line-height: 1.6;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+  }
+  .interview-q:hover {
+    border-left-color: var(--color-info-border);
+    transform: translateX(4px);
+  }
+  .interview-cat {
+    font-size: 11px; font-weight: 700;
+    color: var(--color-info-text); text-transform: uppercase;
+    letter-spacing: 0.08em; margin: 16px 0 8px;
+  }
+
+  /* === MATRIX CARDS (Strategie-Optionen) === */
+  .matrix-card {
+    padding: 22px 24px; border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border-tertiary);
+    background: var(--bg-primary); box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+  }
+  .matrix-card:hover { box-shadow: var(--shadow-md); }
+  .matrix-card h4 { font-size: 18px; font-weight: 600; margin: 0 0 10px; letter-spacing: -0.2px; }
+  .pro-con {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 18px; margin-top: 14px;
+  }
+  @media (max-width: 600px) { .pro-con { grid-template-columns: 1fr; } }
+  .pro-con ul {
+    font-size: 13px; padding-left: 20px;
+    margin: 6px 0; line-height: 1.7; color: var(--text-secondary);
+  }
+  .pro-con .pros-h, .pro-con .cons-h {
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .pro-con .pros-h { color: var(--color-success-text); }
+  .pro-con .cons-h { color: var(--color-danger-text); }
+
+  /* === STRATEGY GROWTH BOX === */
+  .growth-box, .painpoint-box {
+    margin: 14px 0; padding: 14px 16px;
+    border-radius: var(--radius-md); font-size: 13px; line-height: 1.6;
+  }
+  .growth-box {
+    background: var(--gradient-success);
+    border-left: 3px solid var(--color-success-border);
+    color: var(--color-success-text);
+  }
+  .painpoint-box {
+    background: var(--gradient-warning);
+    border-left: 3px solid var(--color-warning-border);
+    color: var(--color-warning-text);
+  }
+  .growth-box strong, .painpoint-box strong { display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* === GROWTH SECTOR CARDS === */
+  .growth-sector {
+    background: var(--bg-primary); border: 0.5px solid var(--border-tertiary);
+    border-radius: var(--radius-lg); padding: 20px 22px; margin-bottom: 14px;
+    box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+    transition: all 0.2s ease;
+  }
+  .growth-sector:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .growth-sector::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%; background: var(--accent, var(--color-info-border));
+  }
+  .growth-sector h4 {
+    font-size: 16px; font-weight: 600; margin: 0 0 4px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .growth-sector .cagr {
+    display: inline-block; padding: 2px 10px; border-radius: 999px;
+    font-size: 12px; font-weight: 700;
+    background: var(--color-success-bg); color: var(--color-success-text);
+  }
+  .growth-sector .market-size { font-size: 13px; color: var(--text-secondary); margin: 6px 0; }
+  .growth-sector p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin: 8px 0 0; }
+  .growth-sector .src { font-size: 11px; color: var(--text-tertiary); font-style: italic; margin-top: 8px; }
+
+  /* === HYPOTHESES === */
+  .hypothesis {
+    padding: 14px 18px; background: var(--bg-secondary);
+    border-radius: var(--radius-md); margin-bottom: 8px;
+    font-size: 14px; line-height: 1.6;
+    transition: all 0.2s ease; border-left: 3px solid var(--color-info-border);
+  }
+  .hypothesis:hover { transform: translateX(4px); }
+  .hypothesis .h-id { font-weight: 700; color: var(--color-info-text); margin-right: 8px; }
+
+  /* === GAP CARDS === */
+  .gap-card {
+    display: flex; gap: 16px; padding: 16px 18px;
+    background: var(--bg-primary); border: 0.5px solid var(--border-tertiary);
+    border-radius: var(--radius-md); margin-bottom: 10px;
+    box-shadow: var(--shadow-sm); transition: all 0.2s ease;
+  }
+  .gap-card:hover { box-shadow: var(--shadow-md); transform: translateX(4px); }
+  .gap-num {
+    font-size: 22px; font-weight: 700; color: var(--color-info-text);
+    width: 36px; flex-shrink: 0; line-height: 1;
+  }
+  .gap-body { font-size: 14px; line-height: 1.6; }
+  .gap-title { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+
+  /* === SCENARIO TABS === */
+  .scenario-tabs {
+    display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .scenario-tab {
+    padding: 11px 18px; font-size: 13px;
+    border-radius: var(--radius-md); background: var(--bg-secondary);
+    border: 0.5px solid var(--border-tertiary); cursor: pointer;
+    font-weight: 600; color: var(--text-primary);
+    transition: all 0.2s ease;
+  }
+  .scenario-tab:hover { background: var(--bg-primary); box-shadow: var(--shadow-sm); }
+  .scenario-tab.active {
+    background: var(--color-info-bg); color: var(--color-info-text);
+    border-color: var(--color-info-border);
+  }
+  .scenario { display: none; animation: fadeIn 0.3s ease; }
+  .scenario.active { display: block; }
+
+  /* === HONEST BOX === */
+  .honest-box {
+    padding: 16px 18px; background: #fff8e6;
+    border-left: 4px solid #BA7517;
+    border-radius: var(--radius-md); margin-bottom: 14px;
+    font-size: 14px; line-height: 1.65; color: #4d3608;
+  }
+  body.dark-mode .honest-box { background: #2d2417; color: #f0d390; }
+  .honest-box strong { color: #2d1f04; }
+  body.dark-mode .honest-box strong { color: #ffd770; }
+
+  /* === BUTTONS === */
+  .print-btn, .edit-btn {
+    position: fixed; bottom: 20px; padding: 12px 20px;
+    background: var(--text-primary); color: var(--bg-primary);
+    border: none; border-radius: var(--radius-md); cursor: pointer;
+    font-size: 13px; font-weight: 600; box-shadow: var(--shadow-md);
+    z-index: 100; transition: all 0.2s ease;
+  }
+  .print-btn { right: 20px; }
+  .edit-btn { right: 160px; background: var(--color-info-border); color: white; }
+  .print-btn:hover, .edit-btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+
+  h3 { font-size: 17px; font-weight: 600; margin: 1.5rem 0 10px; }
+
+  /* === ANIMATED NUMBER === */
+  .animated-number { display: inline-block; }
+
+  /* === PRINT === */
+  @media print {
+    .tabbar, .scenario-tabs, .print-btn, .edit-btn, .mode-toggle { display: none !important; }
+    .section { display: block !important; page-break-after: always; }
+    .scenario { display: block !important; }
+    body { background: white; }
+    .card, .matrix-card, .growth-sector { page-break-inside: avoid; }
+  }
+
+  /* === MOBILE === */
+  @media (max-width: 768px) {
+    .container { padding: 1rem 0.75rem 4rem; }
+    .hero { padding: 1.5rem 1.25rem; }
+    .hero h1 { font-size: 22px; }
+    .tabbar { padding: 4px; position: relative; top: 0; }
+    .tab { padding: 7px 11px; font-size: 12px; }
+    .kpi-value { font-size: 22px; }
+    .section h2 { font-size: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<button class="mode-toggle" id="modeToggle" aria-label="Toggle dark mode" title="Hell/Dunkel umschalten">🌙</button>
+
+<div class="container">
+  <div class="hero">
+    <span class="badge">Version 4</span>
+    <h1>CRM-Produktstrategie für den DACH-Mittelstand</h1>
+    <p>Entscheidungsgrundlage · Bestandskunde mit Intrexx-CRM vorhanden · Ziel: skalierbares Produktgeschäft aufbauen · Stand: Mai 2026</p>
+  </div>
+
+  <div class="tabbar" id="tabbar">
+    <button class="tab active" data-tab="t0">Summary</button>
+    <button class="tab" data-tab="situation">Unsere Situation</button>
+    <button class="tab" data-tab="t1">Markt</button>
+    <button class="tab" data-tab="t2">Wachstumstreiber</button>
+    <button class="tab" data-tab="t3">Stakeholder</button>
+    <button class="tab" data-tab="t4">Pain Points</button>
+    <button class="tab" data-tab="t5">Konkurrenz</button>
+    <button class="tab" data-tab="t6">Differenzierung</button>
+    <button class="tab" data-tab="t7">Tech-Stacks</button>
+    <button class="tab" data-tab="t8">Strategien</button>
+    <button class="tab" data-tab="t9">Intrexx</button>
+    <button class="tab" data-tab="t10">Personas</button>
+    <button class="tab" data-tab="t11">Interviews</button>
+    <button class="tab" data-tab="t12">Hypothesen</button>
+    <button class="tab" data-tab="t13">Empfehlung</button>
+    <button class="tab" data-tab="t14">Quellen</button>
+  </div>
+
+  <!-- ============================================================
+       TAB 0: EXECUTIVE SUMMARY
+       ============================================================ -->
+  <div class="section active" id="t0">
+    <h2>Ausgangsfrage:</h2>
+    <p class="sub">Macht es Sinn, ein eigenes CRM-Produkt für den DACH-Mittelstand von Grund auf neu zu entwickeln?</p>
+
+    <div class="verdict verdict-info">
+      <p class="verdict-title">Unsere Ausgangslage: Wir haben bereits ein CRM auf Intrexx für Bestandskunden</p>
+      
+    </div>
+
+    <div class="verdict verdict-no" style="margin-top: 10px;">
+      <p class="verdict-title">Ein klassisches Voll CRM von Null bauen: hohes Risiko </p>
+      <p class="verdict-body">Der Markt ist im Hauptsegment gesättigt, 50–70 % aller CRM-Projekte scheitern, die Marktführer (Salesforce, HubSpot, Microsoft, SAP) haben mehrere Milliarden $ R&amp;D-Budget jährlich.</p>
+    </div>
+
+    <div class="verdict verdict-yes" style="margin-top: 10px;">
+      <p class="verdict-title">Unsere Vorteile:</p>
+      <p class="verdict-body">Durch Bestandskunden: Cashflow zur Finanzierung, Domänen-Wissen aus echter Branche und ein bereits etabliertes System.</p>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-label">CRM-Markt 2030</div><div class="kpi-value" data-target="158">0</div><div class="kpi-src"> Mrd. $ (Statista/GVR)</div></div>
+      <div class="kpi"><div class="kpi-label">AI-in-CRM CAGR</div><div class="kpi-value">28-36% <span class="kpi-trend up">↑</span></div><div class="kpi-src">Market.us, ResearchAndMarkets</div></div>
+      <div class="kpi"><div class="kpi-label">Mobile CRM CAGR</div><div class="kpi-value">13% <span class="kpi-trend up">↑</span></div><div class="kpi-src">The Business Research Co.</div></div>
+      <div class="kpi"><div class="kpi-label">Projekt-Scheiterrate</div><div class="kpi-value">50–70%</div><div class="kpi-src">Gartner, Forrester</div></div>
+      <div class="kpi"><div class="kpi-label">Akzeptanz-Probleme</div><div class="kpi-value">70%</div><div class="kpi-src">Forrester</div></div>
+      <div class="kpi"><div class="kpi-label">CRM-Adoption DE Mittelstand</div><div class="kpi-value">67%</div><div class="kpi-src">Dr. Web 2026</div></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB SITUATION: UNSERE AUSGANGSLAGE (NEU)
+       ============================================================ -->
+  <div class="section" id="situation">
+    <h2>Unsere Ausgangslage</h2>
+    <p class="sub">Wir haben bereits ein <strong>laufendes CRM auf Intrexx für einen Bestandskunden</strong>.</p>
+
+    <div class="card">
+      <p class="card-title">Was das für uns bedeutet:</p>
+      <p class="card-body">Wir sind bereits im <strong>Servicegeschäft</strong> aktiv: Wir bauen angepasste Lösungen für einzelne Kunden, betreuen sie, verdienen mit Projekten und Wartung.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Service- vs. Produktgeschäft im Vergleich</p>
+      <table class="data">
+        <tr><th>Kriterium</th><th>Servicegeschäft (heute)</th><th>Produktgeschäft (Ziel)</th></tr>
+        <tr><td>Skalierbarkeit</td><td>Begrenzt: jedes Projekt einzeln</td><td>Hoch : einmal bauen, oft verkaufen</td></tr>
+        <tr><td>Cashflow</td><td>Sofort &amp; vorhersehbar</td><td>Erst nach Initialinvestition</td></tr>
+        <tr><td>Risiko</td><td>Niedrig</td><td>Hoch</td></tr>
+        <tr><td>Initialinvestition</td><td>Pro Projekt finanziert</td><td>Eigenes Risiko / Kapital</td></tr>
+        <tr><td>Marge langfristig</td><td>Stabil ~15-25%</td><td>Bei Erfolg deutlich höher</td></tr>
+        <tr><td>Abhängigkeit</td><td>Einzelne Kunden</td><td>Markt allgemein</td></tr>
+        <tr><td>Wer macht das erfolgreich?</td><td>Viele IT-Beratungen</td><td>Wenige Software-Firmen</td></tr>
+      </table>
+    </div>
+
+    <h3>Drei realistische Wege für uns</h3>
+
+    <div class="matrix-card" style="margin-bottom: 14px;">
+      <span class="pill pill-info">Weg 1</span>
+      <h4 style="margin-top: 8px;">Beim Servicegeschäft bleiben &amp; ausbauen</h4>
+      <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 10px;">Wir nutzen unseren Bestandskunden als Referenz und suchen ähnliche Kunden, die Intrexx haben oder einsetzen wollen. Für jeden bauen wir ein angepasstes CRM, kassieren Projekt- und Wartungskosten.</p>
+      <div class="pro-con">
+        <div><div class="pros-h">Pro</div><ul><li>Reference-Case existiert, sofort einsetzbar</li><li>Intrexx hat 1,2 Mio. Nutzer in DACH: kleine, aber existente Zielgruppe</li><li>Niedriges Risiko, bewährtes Modell</li><li>Vorhersehbarer Umsatz</li><li>Nichts Neues lernen nötig</li></ul></div>
+        <div><div class="cons-h">Contra</div><ul><li>Begrenzte Zielgruppe: Intrexx-Markt wächst nicht stark</li><li>Abhängig von Intrexx-Plattform-Zukunft</li><li>Schlecht skalierbar : jeder neue Kunde fast gleiche Arbeit</li><li>Kein Lizenzgeschäft, nur Projektgeschäft</li><li>Nicht Wachstumssegmente (KI, Mobile) bedient</li></ul></div>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 14px 0 0;"><strong>Sinnvoll wenn:</strong> Wir eine stabile, profitable kleine Firma sein wollen mit klarem Fokus. Legitimes Modell, das funktioniert.</p>
+    </div>
+
+    <div class="matrix-card" style="margin-bottom: 14px; border: 2px solid var(--color-info-border);">
+      <span class="pill pill-info">Weg 2</span>
+      <h4 style="margin-top: 8px;">Bestandskunde behalten, parallel Produkt aufbauen</h4>
+      <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 10px;">Der Intrexx-Bestandskunde bleibt als Cashflow-Quelle und finanziert uns. Parallel investieren wir einen Teil unserer Zeit in den Aufbau eines <strong>eigenen Produkts auf modernem Stack</strong> : z.B. Marketplace-App für HubSpot oder vertikales CRM für eine Branche.</p>
+      <div class="growth-box"><strong>Warum das clever ist:</strong> Der Bestandskunde finanziert die Wachstumsphase. Das Domänen-Wissen aus dem Intrexx-Projekt nehmen wir mit (Branchen-Pain-Points, Stakeholder-Muster, Sales-Cycle-Verständnis). Aber das neue Produkt läuft auf zeitgemäßer Technologie und kann skalieren.</div>
+      <div class="pro-con">
+        <div><div class="pros-h">Pro</div><ul><li>Bestandskunde sichert Existenz während Produktaufbau</li><li>Domänen-Wissen wird mitgenommen</li><li>Pilotkunden-Erfahrung schon vorhanden</li><li>Best of both worlds: stabiles Geld + Wachstumschance</li><li>Wachstumssegmente (KI, Mobile, Cloud) werden bedient</li></ul></div>
+        <div><div class="cons-h">Contra</div><ul><li>Zwei Geschäfte parallel führen anstrengend</li><li>Aufmerksamkeit muss aufgeteilt werden</li><li>Klare interne Trennung nötig: wer macht was?</li><li>Neue Technologie muss gelernt werden</li></ul></div>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); margin: 14px 0 0;"><strong>Sinnvoll wenn:</strong> Wir wachsen wollen, aber das Risiko eines "alles-oder-nichts" nicht eingehen können. Realistischer Mittelweg für die meisten Firmen.</p>
+    </div>
+
+
+    <h3>Diese Fragen sollten wir im Team klären</h3>
+
+    <div class="hypothesis"><span class="h-id">F1</span>In welcher <strong>Branche</strong> ist unser Bestandskunde? Gibt es viele ähnliche Firmen, an die wir das Konzept verkaufen könnten?</div>
+    <div class="hypothesis"><span class="h-id">F2</span>Wie viel <strong>Umsatz</strong> macht der Intrexx-Kunde aktuell und in den nächsten 2-3 Jahren? Das ist die finanzielle Basis für unsere Planung.</div>
+    <div class="hypothesis"><span class="h-id">F3</span>Wem gehört das, was wir <strong>gebaut haben</strong>? Code-Eigentum, IP-Rechte, Wiederverwendung, gibt's vertragliche Beschränkungen?</div>
+    <div class="hypothesis"><span class="h-id">F4</span>Wollen wir <strong>wachsen</strong>, oder sind wir mit dem aktuellen Geschäft zufrieden?</div>
+    <div class="hypothesis"><span class="h-id">F5</span>Wenn wir wachsen wollen, wie hoch ist unsere <strong>Risiko-Bereitschaft</strong>? Sicher (Weg 2) oder bereit, größer zu denken?</div>
+    <div class="hypothesis"><span class="h-id">F6</span>Gibt es <strong>Verpflichtungen</strong> gegenüber United Planet (Intrexx-Hersteller) oder dem Bestandskunden, die unsere Optionen einschränken?</div>
+
+  </div>
+
+  <!-- ============================================================
+       TAB 1: MARKT
+       ============================================================ -->
+  <div class="section" id="t1">
+    <h2>Marktdaten &amp; Wachstum</h2>
+    <p class="sub">Wie groß ist der Markt, wer dominiert?</p>
+
+
+    <div class="kpi-grid">
+      <div class="kpi"><div class="kpi-label">Markt 2024</div><div class="kpi-value">62 Mrd. $</div><div class="kpi-src">Industry Experts 2024</div></div>
+      <div class="kpi"><div class="kpi-label">Markt 2030 (konservativ)</div><div class="kpi-value">158 Mrd. $</div><div class="kpi-src">Statista 2026</div></div>
+      <div class="kpi"><div class="kpi-label">Markt 2030 (mittel)</div><div class="kpi-value">163-182 Mrd. $</div><div class="kpi-src">GVR / Global Industry Analysts</div></div>
+      <div class="kpi"><div class="kpi-label">CAGR 2024-2030</div><div class="kpi-value">10-15%</div><div class="kpi-src">Verschiedene Studien</div></div>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Wachstumsprognose Hauptmarkt (konservative Schätzung)</p>
+      <div class="chart-wrap" style="height: 320px;"><canvas id="marketGrowthChart"></canvas></div>
+      <p class="source">Quelle: Industry Experts 2024, Statista 2026, Grand View Research 2026, Mittelwerte aus mehreren Studien</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Wer nutzt CRM im Mittelstand?</p>
+      <div class="chart-wrap" style="height: 300px;"><canvas id="adoptionChart"></canvas></div>
+      <p class="source">Quelle: Dr. Web CRM-Vergleich 2026 : Adoption ab 11 Mitarbeitern</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Marktanteile nach Anbieter</p>
+      <div class="chart-wrap" style="height: 280px;"><canvas id="vendorChart"></canvas></div>
+      <p class="source">Quelle: 6sense 2025, zitiert in Wave Connect 2026, Schätzungen für Dynamics/SAP.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Konsequenz: Wachstum landet bei den Großen</p>
+      <p class="card-body">Wenn der Markt von 62 auf 158 Mrd. $ wächst, heißt das <strong>nicht</strong>, dass die 96 Mrd. $ Zuwachs für neue Anbieter frei sind. Salesforce wird wahrscheinlich von 30 auf 60 Mrd. $ wachsen, HubSpot von 2 auf 6 Mrd. $. Die Großen teilen sich den Zuwachs überproportional auf. <strong>Ein neuer Anbieter im Hauptsegment kämpft um Krümel.</strong> Aber: Es gibt Sub-Segmente, die viel schneller wachsen als der Hauptmarkt : siehe Tab "Wachstumstreiber".</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 2: WACHSTUMSTREIBER (NEU)
+       ============================================================ -->
+  <div class="section" id="t2">
+    <h2>Wachstumstreiber: Wo das Geld hingeht</h2>
+    <p class="sub">Der Hauptmarkt wächst mit ~10-15 % pro Jahr. Aber bestimmte Sub-Segmente wachsen mit 25-40 % CAGR das Drei- bis Vierfache. Hier liegen die Chancen für neue Produkte.</p>
+
+    <div class="card">
+      <p class="card-title">Vergleich: CAGR der CRM-Sub-Segmente</p>
+      <div class="chart-wrap" style="height: 400px;"><canvas id="segmentGrowthChart"></canvas></div>
+      <p class="source">Quellen: siehe einzelne Segmentkarten unten. CAGR = Compound Annual Growth Rate (jährliches Wachstum).</p>
+    </div>
+
+    <h3>Die wichtigsten Wachstumstreiber im Detail</h3>
+
+    <div class="growth-sector" style="--accent: #7F5BD3;">
+      <h4>🤖 KI-/AI-in-CRM <span class="cagr">28–36% CAGR</span></h4>
+      <div class="market-size"><strong>$4,1 Mrd. (2023) → $48-52 Mrd. (2030-2033)</strong></div>
+      <p>Mit Abstand am stärksten wachsendes Segment. Treiber: Generative AI (Salesforce Agentforce, Microsoft Copilot), Predictive Lead Scoring, AI-Chatbots, automatische Email/Meeting-Zusammenfassungen, intelligente Cross-/Upselling-Empfehlungen. <strong>65 % der Unternehmen nutzen bereits CRM mit Generative AI</strong> (SLT Creative 2026), und diese 83 % übertreffen ihre Sales-Ziele.</p>
+      <div class="painpoint-box"><strong>Welcher Pain Point gelöst wird:</strong> Datenpflege-Aufwand (23 %), schlechte Forecasts, manuelle Wiederholungsarbeit, fehlende Personalisierung.</div>
+      <div class="src">Quellen: Market.us 2024, ResearchAndMarkets 2026, SLT Creative 2026</div>
+    </div>
+
+    <div class="growth-sector" style="--accent: #378ADD;">
+      <h4>📱 Mobile CRM <span class="cagr">10–15% CAGR</span></h4>
+      <div class="market-size"><strong>$8 Mrd. (2025) → $36 Mrd. (2030)</strong> bei optimistischer Schätzung</div>
+      <p>Sehr stark wachsend, weil die Außendienst-Mobile-UX vieler Anbieter schlecht ist. Treiber: Mobile Workforce, Remote Sales, Echtzeit-Datenzugriff im Außendienst, Mobile-First-Generation tritt in den Vertrieb ein. Die meisten etablierten CRMs sind Desktop-zuerst-gebaut.</p>
+      <div class="painpoint-box"><strong>Welcher Pain Point gelöst wird:</strong> Außendienst-UX schlecht (20 % brauchen explizit Mobile CRM, 81 % nutzen mehrere Geräte), Offline-Probleme, Doppelerfassung nach Terminen.</div>
+      <div class="src">Quellen: The Business Research Company 2026, Verified Market Reports, Strategic Revenue Insights</div>
+    </div>
+
+    <div class="growth-sector" style="--accent: #1D9E75;">
+      <h4>☁️ Cloud-CRM / SaaS-Modelle <span class="cagr">15–20% CAGR</span></h4>
+      <div class="market-size"><strong>87 % der neuen Salesforce-Implementierungen 2024 Cloud-basiert</strong></div>
+      <p>Cloud dominiert: Pay-as-you-grow, keine großen Kapitalausgaben, vorhersehbare monatliche Kosten. SaaS-Modelle ermöglichen schnelle Updates, weniger IT-Aufwand, einfache Skalierung. <strong>Wichtig für DACH:</strong> Cloud-Wachstum in DE liegt bei +16,4 % (Bitkom 2026) : fast doppelt so schnell wie der Gesamtmarkt.</p>
+      <div class="painpoint-box"><strong>Welcher Pain Point gelöst wird:</strong> Hohe Kapitalkosten klassischer CRMs, IT-Aufwand, lange Implementierungszeiten. Aber Achtung: Für DACH-Mittelstand ist Cloud nicht immer Killer-Argument : DSGVO und On-Premise-Wunsch bleiben relevant.</div>
+      <div class="src">Quellen: Mordor Intelligence, Bitkom 2026, Fortune Business Insights</div>
+    </div>
+
+    <div class="growth-sector" style="--accent: #BA7517;">
+      <h4>🔌 Marketplace-Apps / CRM-Erweiterungen <span class="cagr">~20-25% CAGR</span></h4>
+      <div class="market-size"><strong>HubSpot Marketplace: 1.700+ Apps; Salesforce AppExchange: 7.000+ Apps</strong></div>
+      <p>Wenn die großen CRMs wachsen, wächst auch ihr App-Ökosystem mit. Apps auf etablierten Marketplaces profitieren direkt vom Wachstum der Plattform : ohne den Kunden selbst akquirieren zu müssen. Geschäftsmodell: Subscription per Nutzer/Monat. <strong>Beispiel:</strong> Erfolgreiche AppExchange-Apps wie Mailchimp-Integration generieren 7-stellige Jahresumsätze.</p>
+      <div class="painpoint-box"><strong>Welche Pain Points gelöst werden:</strong> Spezifische Lücken in Standard-CRMs (Integration zu DATEV, deutsche Vertragsverwaltung, branchenspezifisches Reporting, DSGVO-Compliance, lokale KI). 36 % der Käufer priorisieren Integrationen.</div>
+      <div class="src">Quellen: Salesforce AppExchange Statistics, HubSpot Marketplace Data, Capterra Buyer Insight</div>
+    </div>
+
+    <div class="growth-sector" style="--accent: #D85A30;">
+      <h4>🎯 Vertikale / Branchen-CRMs <span class="cagr">~12-18% CAGR</span></h4>
+      <div class="market-size"><strong>Beispiel BSI Customer Suite: profitabel im DACH-Versicherungsmarkt</strong></div>
+      <p>Branchenspezialisten wachsen mit dem Gesamtmarkt mit, weil sie ihre Branche genauer treffen als horizontale Anbieter. Vertikale CRMs für Maschinenbau, Versicherungsmakler, Versorger, Bau, Gesundheitsdienstleister haben höhere Preisdurchsetzung und Kundenbindung. <strong>Asia-Pacific-Branchenadoption</strong> ist mit ~15 % CAGR besonders stark : aber auch DACH wächst solide.</p>
+      <div class="painpoint-box"><strong>Welche Pain Points gelöst werden:</strong> Branchen-Besonderheiten (Service-Vertrieb im Maschinenbau, Vertragsverwaltung für Makler, Projektvertrieb im Bau) : Standard-CRMs decken das nicht ab, Customizing-Aufwand wird unhaltbar.</div>
+      <div class="src">Quellen: Mordor Intelligence, Fortune Business Insights, BSI-Geschäftsberichte</div>
+    </div>
+
+    <div class="growth-sector" style="--accent: #7F77DD;">
+      <h4>📊 Customer Data Platforms (CDP) / RevOps <span class="cagr">~22-25% CAGR</span></h4>
+      <div class="market-size"><strong>Wachsender Markt mit weniger Wettbewerb als CRM-Hauptmarkt</strong></div>
+      <p>Keine CRMs, sondern Schichten <em>über</em> bestehenden Systemen. Sammeln Daten aus CRM, ERP, Marketing, Support und geben echte 360°-Sicht. Wachstum aus dem Trend "kein Rip-and-Replace" : Mittelständler wollen ihre Investments nicht wegwerfen, aber doch eine konsolidierte Datensicht. Konkurrenten: Segment, Hightouch, kleinere lokale Player.</p>
+      <div class="painpoint-box"><strong>Welche Pain Points gelöst werden:</strong> Datenqualität (36 % Top-Problem!), schlechte Forecasts, Daten-Silos zwischen ERP/CRM/Marketing, fragmentierte Multi-Channel-Kommunikation im Customer Support.</div>
+      <div class="src">Quellen: Gartner CDP Market Guide, MarketsAndMarkets, eigene Recherche</div>
+    </div>
+
+    <div class="growth-sector" style="--accent: #993C1D;">
+      <h4>🛡️ DSGVO / Lokale Datenhaltung (DACH-spezifisch) <span class="cagr">stark wachsende Nachfrage</span></h4>
+      <div class="market-size"><strong>Schrems II-Urteil verschärft Anforderungen an US-Cloud-Anbieter</strong></div>
+      <p>Kein eigener Markt-Sub-Segment, aber ein <strong>Multiplikator</strong>: Jedes CRM, das DSGVO-konform mit deutscher/EU-Datenhaltung punktet, hat einen DACH-Vorteil gegenüber Salesforce/HubSpot. BSI hat sich genau darauf aufgebaut und ist erfolgreich. Mit Schrems II und EU-Data Act steigt die Nachfrage weiter.</p>
+      <div class="painpoint-box"><strong>Welche Pain Points gelöst werden:</strong> Compliance-Bedenken im Mittelstand, Vendor-Lock-in mit US-Anbietern, regulatorische Anforderungen (besonders Banking, Versicherung, Gesundheit, Behörden).</div>
+      <div class="src">Quellen: Bitkom KI-Studie 2026, Schrems II Urteil EuGH, BSI Customer Suite Marktpositionierung</div>
+    </div>
+
+    <div class="card" style="margin-top: 2rem;">
+      <p class="card-title">Was bedeutet das strategisch?</p>
+      <p class="card-body">Die wichtigste Erkenntnis: <strong>Wenn ein neues Produkt mehrere dieser Wachstumstreiber gleichzeitig bedient, ist die Erfolgswahrscheinlichkeit deutlich höher</strong>. Eine Mobile-First-KI-CRM-Lösung für eine deutsche Branche mit lokaler Datenhaltung trifft 4 Wachstumstreiber gleichzeitig. Das wächst dann oft 3-4x schneller als der Hauptmarkt.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 3: STAKEHOLDER
+       ============================================================ -->
+  <div class="section" id="t3">
+    <h2>Stakeholder-Analyse</h2>
+    <p class="sub">Basierend auf deiner Stakeholder-Matrix und validiert gegen Marktdaten.</p>
+
+    <div class="card">
+      <p class="card-title">Die 4 Kreise der Nutzerintensität</p>
+      <table class="data">
+        <tr><th>Kreis</th><th>Rollen</th><th>Marktevidenz</th></tr>
+        <tr><td><span class="pill pill-danger">Kern</span></td><td>Vertrieb, Sales, Marketing, Account Mgmt, Customer Support</td><td>Sales-Teams verbringen 18 % ihrer Arbeitszeit im CRM (Cirrus Insight)</td></tr>
+        <tr><td><span class="pill pill-warning">Intensiv</span></td><td>Außendienst, Sales Leadership, Sales Ops, Innendienst, Revenue Ops</td><td>20 % Mobile-CRM-Bedarf, 81 % Multi-Device (Salesmate)</td></tr>
+        <tr><td><span class="pill pill-info">Strategisch</span></td><td>Geschäftsführung, IT, Controlling, BI/Analytics</td><td>CRM-Kauf-Priorität: 45 % Automatisierung, 36 % Integration (Capterra)</td></tr>
+        <tr><td><span class="pill pill-success">Technisch</span></td><td>API-Mgmt, Datenschutz, Systemintegration, CRM-Admins</td><td>Integration Top-3-Problem bei Einführung (Trovarit)</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Macht- vs. Einfluss-Karte</p>
+      <div class="chart-wrap" style="height: 420px;"><canvas id="powerInterest"></canvas></div>
+      <p class="source">Wer Macht und Interesse hat, muss aktiv eingebunden werden : sonst Akzeptanzproblem (Forrester: 70 % Hauptursache für Scheitern).</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Was bedeutet das für ein Produkt?</p>
+      <p class="card-body">Ein <strong>verkaufbares Produkt</strong> muss vor allem den Kreis <em>Kern</em> begeistern (sie nutzen es täglich). Gekauft wird es aber von <em>Strategisch</em> (Geschäftsführung, IT) : die ganz andere Kriterien haben. Diese <strong>Doppel-Zielgruppe ist die größte Herausforderung.</strong></p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 4: PAIN POINTS
+       ============================================================ -->
+  <div class="section" id="t4">
+    <h2>Validierte Pain Points</h2>
+    <p class="sub">Nur Pain Points mit Studienbeleg.</p>
+
+    <div class="card">
+      <p class="card-title">Top-Probleme bei laufenden CRM-Systemen</p>
+      <div class="chart-wrap" style="height: 360px;"><canvas id="painChart"></canvas></div>
+      <p class="source">Quellen: Trovarit "CRM in der Praxis", i2s-Marktforschung : zitiert in <a href="https://www.crmsystem.de/news/crm-nachteile-wo-hakt-es-in-der-praxis" target="_blank">CRM System.de</a></p>
+    </div>
+
+    <h3>Detail nach Stakeholder-Gruppe</h3>
+
+    <div class="gap-card"><div class="gap-num">01</div><div class="gap-body"><div class="gap-title">Vertrieb: Zu viele Pflichtfelder, schlechte Datenpflege</div>Sales-Teams empfinden CRMs als Kontroll- statt Hilfsinstrument. 70 % der gescheiterten CRM-Projekte: Akzeptanzproblem (Forrester). <span class="source">Revenue Pilots, Forrester</span></div></div>
+    <div class="gap-card"><div class="gap-num">02</div><div class="gap-body"><div class="gap-title">IT / Admin: Integrationschaos, Vendor-Lock-in</div>Integration mit Bestandssystemen Top-Problem bei Einführung (23 %) und Betrieb (19 %). <span class="source">Trovarit, Mordor</span></div></div>
+    <div class="gap-card"><div class="gap-num">03</div><div class="gap-body"><div class="gap-title">Geschäftsführung: Hohe TCO, niedrige ROI-Transparenz</div>Salesforce Sales Cloud: 120.000 €+ Lizenzen bei 20 Nutzern + Implementierung + 5-Jahres-Bindung. <span class="source">Dr. Web, Bitkom 2026</span></div></div>
+    <div class="gap-card"><div class="gap-num">04</div><div class="gap-body"><div class="gap-title">Außendienst: Schlechte mobile UX, Offline-Probleme</div>20 % benötigen explizit Mobile CRM, aber Anbieter liefern oft mangelhafte Mobile-Erfahrung. <span class="source">Capterra, Salesmate</span></div></div>
+    <div class="gap-card"><div class="gap-num">05</div><div class="gap-body"><div class="gap-title">Customer Support: Fragmentierte Kommunikation</div>Tickets verteilt über Mail, Chat, Telefon, Portal. <span class="source">Mordor, Fortune Business Insights</span></div></div>
+    <div class="gap-card"><div class="gap-num">06</div><div class="gap-body"><div class="gap-title">Marketing: Lead-Qualität &amp; Personalisierung</div>45 % der CRM-Käufer priorisieren Automatisierung als wichtigste Funktion (Capterra). <span class="source">Capterra Buyer Insight</span></div></div>
+    <div class="gap-card"><div class="gap-num">07</div><div class="gap-body"><div class="gap-title">Management: Unzuverlässige Forecasts, schlechte KPIs</div>Datenqualität (36 % Top-Problem) macht Forecasts unzuverlässig. <span class="source">Fortune Business Insights, i2s</span></div></div>
+  </div>
+
+  <!-- ============================================================
+       TAB 5: KONKURRENZ
+       ============================================================ -->
+  <div class="section" id="t5">
+    <h2>Konkurrenz-Analyse</h2>
+    <p class="sub">Wer ist im Markt : und wie groß sind die Riesen wirklich?</p>
+
+    <div class="honest-box">
+      <strong>Realitätscheck:</strong> Salesforce hat 80.000+ Mitarbeiter und 5,4 Mrd. $ jährliches F&amp;E-Budget. HubSpot 8.700+ Mitarbeiter, eigenen Marketplace mit 1.700+ Apps. Microsoft Dynamics hat den Office-365-Verteilungskanal. SAP die ERP-Bestandskundenbasis.
+    </div>
+
+    <table class="data">
+      <tr><th>Anbieter</th><th>Stärke</th><th>Schwäche</th><th>F&amp;E-Power</th></tr>
+      <tr><td><strong>Salesforce</strong></td><td>Marktführer Mittelstand (46 % Anteil); KI (Einstein, Agentforce); 7.000+ AppExchange-Apps</td><td>Teuer (120k€+ bei 20 Nutzern); komplex; nicht DACH-spezifisch</td><td>★★★★★</td></tr>
+      <tr><td><strong>HubSpot</strong></td><td>62 % Marktanteil KMU; Freemium; Marketplace; Inbound-Marketing</td><td>Schwächer im klassischen Mittelstand; Skalierung wird teuer</td><td>★★★★</td></tr>
+      <tr><td><strong>Microsoft Dynamics 365</strong></td><td>Office-365-Integration; Marke; ERP+CRM-Kombination</td><td>UX angestaubt; Integration oft problematisch</td><td>★★★★★</td></tr>
+      <tr><td><strong>SAP Sales Cloud</strong></td><td>S/4HANA-Integration; deutsche Marke</td><td>Nur sinnvoll mit SAP; teuer; angestaubte UI</td><td>★★★★★</td></tr>
+      <tr><td><strong>Zoho CRM</strong></td><td>Sehr günstig; breites Funktionsspektrum</td><td>UI veraltet; Support oft kritisiert</td><td>★★★</td></tr>
+      <tr><td><strong>Pipedrive</strong></td><td>Sehr einfach; sales-fokussiert; gute UX</td><td>Weniger Marketing-/Service-Funktionen</td><td>★★★</td></tr>
+      <tr><td><strong>BSI Customer Suite</strong></td><td>Führend DACH; spezialisiert Banking/Insurance/Retail/Energy</td><td>Nicht generisch; teuer</td><td>★★★</td></tr>
+      <tr><td><strong>CAS, CentralStation, ADITO, Weclapp</strong></td><td>DACH-Player; Mittelstand-fokussiert; deutsche Datenhaltung</td><td>Deutlich kleinere Marktanteile</td><td>★★</td></tr>
+      <tr><td><strong>Bitrix24, vtiger, SuiteCRM</strong></td><td>Open-Source-Basis; günstig; flexibel</td><td>UI/UX teils schwach; weniger Polish</td><td>★★</td></tr>
+    </table>
+    <p class="source">Quellen: Dr. Web CRM-Vergleich 2026, 6sense 2025, Mordor Intelligence, Anbieter-Angaben</p>
+  </div>
+
+  <!-- ============================================================
+       TAB 6: DIFFERENZIERUNG
+       ============================================================ -->
+  <div class="section" id="t6">
+    <h2>Differenzierungslücken</h2>
+    <p class="sub">Was bestehende CRMs schlecht abdecken : wo Chancen für ein neues Produkt liegen.</p>
+
+    <div class="gap-card"><div class="gap-num">01</div><div class="gap-body"><div class="gap-title">DSGVO &amp; deutsche/EU-Datenhaltung</div>US-Anbieter haben Schrems-II-Schwächen. Für regulierte Branchen (Banking, Versicherung, Gesundheit, Verwaltung) Killerkriterium. <strong>BSI bedient genau das erfolgreich.</strong></div></div>
+    <div class="gap-card"><div class="gap-num">02</div><div class="gap-body"><div class="gap-title">Mobile-First mit Offline-Modus</div>20 % der Nutzer brauchen es, aber Anbieter liefern schlecht. Eine Mobile-First-Lösung mit echter Offline-Funktion, Sprachdiktat und Foto-Anhang fehlt im Markt.</div></div>
+    <div class="gap-card"><div class="gap-num">03</div><div class="gap-body"><div class="gap-title">Echte 360°-Sicht durch Datenintegration (CDP-Funktion)</div>Standard-CRMs zeigen nur CRM-Daten. Eine Lösung, die ERP, Tickets, Dokumente, IoT-Daten zusammenführt, ist wachsender Markt.</div></div>
+    <div class="gap-card"><div class="gap-num">04</div><div class="gap-body"><div class="gap-title">Branchenspezifische Vertikallösung</div>Maschinenbau (Service-Mgmt), Bau (Projekt-Vertrieb), Versicherungsmakler (Vertragsverwaltung), Energieversorger : Standard-CRMs decken Branchenspezifika nicht ab.</div></div>
+    <div class="gap-card"><div class="gap-num">05</div><div class="gap-body"><div class="gap-title">Schlanke, rollenbasierte UI mit Akzeptanz</div>Hauptgrund für CRM-Scheitern: zu viele Pflichtfelder. Eine UI, die radikal vereinfacht und auf Akzeptanz designt ist.</div></div>
+    <div class="gap-card"><div class="gap-num">06</div><div class="gap-body"><div class="gap-title">Lokale, datenschutzkonforme KI für Mittelstand</div>Bitkom 2026: 41 % nutzen KI, 48 % planen : aber US-Cloud-KI bremst aus Datenschutzgründen. Ein deutsches Tool mit lokal gehosteter LLM-Integration ist offener Markt.</div></div>
+    <div class="gap-card"><div class="gap-num">07</div><div class="gap-body"><div class="gap-title">DATEV-, ELO-, dt. Buchhaltungs-Integration</div>Standard-CRMs haben keine echte DATEV-Anbindung. Marktlücke für Add-on-Apps.</div></div>
+    <div class="gap-card"><div class="gap-num">08</div><div class="gap-body"><div class="gap-title">Faire, transparente Lizenzkosten ohne Lock-in</div>Vendor-Lock-in ist klarer Pain Point. Self-hosted oder fairer Vertrag mit Datenexport ist Verkaufsargument.</div></div>
+  </div>
+
+  <!-- ============================================================
+       TAB 7: TECH-STACKS
+       ============================================================ -->
+  <div class="section" id="t7">
+    <h2>Tech-Stack-Vergleich</h2>
+    <p class="sub">Wenn ein Produkt gebaut wird: welcher Stack, sollte Intrexx keine Option mehr sein?</p>
+
+
+    <table class="data">
+      <tr><th>Stack</th><th>Typ</th><th>Eignung Produkt</th><th>Talentpool</th><th>Mobile/KI</th><th>Verdict</th></tr>
+      <tr><td><strong>Next.js/React + Node.js + PostgreSQL</strong></td><td>Code</td><td>★★★★★</td><td>★★★★★</td><td>★★★★★</td><td><span class="pill pill-success">Top für Produkt</span></td></tr>
+      <tr><td><strong>Ruby on Rails / Laravel</strong></td><td>Code</td><td>★★★★</td><td>★★★★</td><td>★★★★</td><td><span class="pill pill-success">Solide</span></td></tr>
+      <tr><td><strong>Frappe / ERPNext (Open Source)</strong></td><td>Framework</td><td>★★★★</td><td>★★★</td><td>★★★</td><td><span class="pill pill-info">Schnelles MVP</span></td></tr>
+      <tr><td><strong>Salesforce/HubSpot AppExchange</strong></td><td>Marketplace-Build</td><td>★★★★★</td><td>★★★</td><td>★★★★★</td><td><span class="pill pill-success">Top für Add-on</span></td></tr>
+      <tr><td><strong>Mendix / OutSystems</strong></td><td>Low-Code</td><td>★★★</td><td>★★</td><td>★★★★</td><td><span class="pill pill-warning">Eher Einzelprojekt</span></td></tr>
+      <tr><td><strong>Intrexx</strong></td><td>Low-Code (Legacy)</td><td>★★</td><td>★</td><td>★★</td><td><span class="pill pill-danger">Nicht für Produkt</span></td></tr>
+      <tr><td><strong>Bubble / Retool (No-Code)</strong></td><td>No-Code</td><td>★★</td><td>★★★</td><td>★★★</td><td><span class="pill pill-warning">Prototyp</span></td></tr>
+    </table>
+    <p class="source">Bewertung: Stack Overflow Developer Survey 2024, GitHub-Star-Trends, Gartner Magic Quadrant, StepStone/LinkedIn DACH Job-Postings.</p>
+
+
+  </div>
+
+  <!-- ============================================================
+       TAB 8: STRATEGIEN (mit Wachstumstreibern + Pain Points)
+       ============================================================ -->
+  <div class="section" id="t8">
+    <h2>Strategische Produkt-Optionen</h2>
+    <p class="sub">Vier Wege. Jede Option zeigt jetzt, <strong>welche Wachstumstreiber sie nutzt</strong> und <strong>welche Pain Points sie löst</strong>.</p>
+
+    <div class="scenario-tabs">
+      <button class="scenario-tab" data-sc="sc1">A: Voll-CRM</button>
+      <button class="scenario-tab active" data-sc="sc2">B: Vertikales CRM</button>
+      <button class="scenario-tab" data-sc="sc3">C: Marketplace-App</button>
+      <button class="scenario-tab" data-sc="sc4">D: CDP / RevOps</button>
+    </div>
+
+    <div class="scenario" id="sc1">
+      <div class="matrix-card">
+        <span class="pill pill-danger">Nicht empfohlen</span>
+        <h4 style="margin-top: 10px;">Option A : Voll-CRM von Grund auf</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 10px;">Klassisches CRM mit allen Modulen als Konkurrenz zu Salesforce/HubSpot, branchenübergreifend.</p>
+
+        <div class="growth-box"><strong>Wachstumstreiber genutzt:</strong> Nur Hauptmarkt (10–15 % CAGR). Konkurriert direkt mit den Großen, die das meiste Wachstum abgreifen.</div>
+        <div class="painpoint-box"><strong>Pain Points gelöst:</strong> Theoretisch alle : praktisch keiner besser als Bestandsanbieter.</div>
+
+        <div class="pro-con">
+          <div><div class="pros-h">Pro</div><ul><li>Breite Zielgruppe theoretisch</li><li>Maximale Kontrolle über Produkt</li></ul></div>
+          <div><div class="cons-h">Contra</div><ul><li>30+ Personenmonate Initial-Investment</li><li>Direkter Wettbewerb mit Milliarden-Konzernen</li><li>Marketing-/Vertriebsaufwand enorm</li><li>Time-to-Revenue oft 2-3 Jahre</li><li>Hohes Scheiterrisiko</li></ul></div>
+        </div>
+        <p style="font-size: 13px; color: var(--text-secondary); margin: 14px 0 0;"><strong>Erfolgschance:</strong> ★ : sehr niedrig ohne 7-stelliges Investment.</p>
+      </div>
+    </div>
+
+    <div class="scenario active" id="sc2">
+      <div class="matrix-card" style="border: 2px solid var(--color-info-border);">
+        <span class="pill pill-info">Top-Empfehlung</span>
+        <h4 style="margin-top: 10px;">Option B : Vertikales CRM für eine Branche</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 10px;">CRM-Kern mit tiefer Spezialisierung auf <em>eine</em> Branche (z.B. Maschinenbau-Service-Vertrieb, Versicherungsmakler, Energieversorger, Bau-Projektvertrieb).</p>
+
+        <div class="growth-box"><strong>Wachstumstreiber genutzt (mehrere gleichzeitig!):</strong> ✓ Vertikales CRM (~15 % CAGR) ✓ AI-in-CRM (28-36 %) ✓ Mobile CRM (13 %) ✓ DSGVO/lokale Datenhaltung. Diese Kombination ergibt einen Multiplikator-Effekt : Wachstum 3-4x über Hauptmarkt möglich.</div>
+        <div class="painpoint-box"><strong>Pain Points gelöst:</strong> Branchen-Besonderheiten (Standard-CRMs decken nicht ab), Akzeptanz (rolle-/branchengerecht), DSGVO (deutsche Datenhaltung), unzuverlässige Forecasts (branchenspezifisches Predictive AI).</div>
+
+        <div class="pro-con">
+          <div><div class="pros-h">Pro</div><ul><li>Echter Wettbewerbsvorteil : kein Head-to-Head mit Salesforce</li><li>Klare Vertriebsstory ("Wir sind die Lösung für X")</li><li>Höhere Preisdurchsetzung</li><li>BSI Customer Suite zeigt: Modell funktioniert</li><li>Branchenfokus erleichtert Marketing &amp; Sales</li><li>Hohe Kundenbindung</li></ul></div>
+          <div><div class="cons-h">Contra</div><ul><li>Schmalerer Markt : sorgfältige Branchenauswahl</li><li>Domänen-Expertise muss aufgebaut werden</li><li>10–14 Personenmonate Initial</li><li>Pilot-Kunden in Zielbranche essenziell</li></ul></div>
+        </div>
+        <p style="font-size: 13px; color: var(--text-secondary); margin: 14px 0 0;"><strong>Erfolgschance:</strong> ★★★★ : gut bei klarer Branchenwahl. <strong>Stack:</strong> Modern Web (Next.js/Node/PostgreSQL) mit lokaler KI-Integration.</p>
+      </div>
+    </div>
+
+    <div class="scenario" id="sc3">
+      <div class="matrix-card" style="border: 2px solid var(--color-info-border);">
+        <span class="pill pill-info">Top-Empfehlung</span>
+        <h4 style="margin-top: 10px;">Option C : Marketplace-App auf etabliertem CRM</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 10px;">Statt eigenes CRM : App im Salesforce AppExchange, HubSpot Marketplace oder Microsoft AppSource (Beispiele: DATEV-Anbindung, DSGVO-Compliance-Layer, deutsche Vertragsverwaltung, branchenspezifisches Lead-Scoring).</p>
+
+        <div class="growth-box"><strong>Wachstumstreiber genutzt:</strong> ✓ Marketplace-Apps (20-25 % CAGR mit Plattform-Wachstum) ✓ AI-Integration auf Plattform-AI (Einstein, Breeze) ✓ DSGVO als deutsches Add-on. Profitiert direkt vom Plattform-Wachstum ohne eigene Kundenakquise.</div>
+        <div class="painpoint-box"><strong>Pain Points gelöst:</strong> Spezifische Lücken in Standard-CRMs (DATEV, deutsches Reporting, DSGVO-Compliance). Integration als Pain Point (Top-3 mit 23 %) wird gelöst, weil App genau dort sitzt.</div>
+
+        <div class="pro-con">
+          <div><div class="pros-h">Pro</div><ul><li>Niedriges Investment (3–6 Personenmonate)</li><li>Distribution durch Plattform (riesige Bestandskunden)</li><li>Kein Wettbewerb mit Riesen, sondern Partnerschaft</li><li>Schneller Markteintritt</li><li>Klare Monetarisierung über Subscription</li></ul></div>
+          <div><div class="cons-h">Contra</div><ul><li>Abhängigkeit von Marketplace-Regeln</li><li>Plattformgebühren (15–30 % typisch)</li><li>Begrenzte Differenzierung möglich</li><li>Tech-Stack der Plattform vorgegeben</li></ul></div>
+        </div>
+        <p style="font-size: 13px; color: var(--text-secondary); margin: 14px 0 0;"><strong>Erfolgschance:</strong> ★★★★ : sehr gut für schnellen Markteinstieg. <strong>Empfehlung:</strong> als Phase 1 vor Option B.</p>
+      </div>
+    </div>
+
+    <div class="scenario" id="sc4">
+      <div class="matrix-card">
+        <h4>Option D : Customer Data Platform / RevOps-Tool</h4>
+        <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 10px;">Kein CRM, sondern Schicht <em>über</em> bestehenden Systemen. Sammelt CRM-, ERP-, Marketing-, Support-Daten und gibt 360°-Sicht.</p>
+
+        <div class="growth-box"><strong>Wachstumstreiber genutzt:</strong> ✓ CDP/RevOps-Markt (22-25 % CAGR) ✓ KI-getriebene Analytics (28-36 %) ✓ Integration-Bedarf (36 % Top-Auswahlkriterium). Wachstumssegment mit weniger Wettbewerb.</div>
+        <div class="painpoint-box"><strong>Pain Points gelöst:</strong> Datenqualität (#1 Problem mit 36 %!), Daten-Silos zwischen Systemen, fragmentierte Multi-Channel-Kommunikation, schlechte Forecasts mangels Datenkonsolidierung.</div>
+
+        <div class="pro-con">
+          <div><div class="pros-h">Pro</div><ul><li>Wachstumsmarkt mit weniger Wettbewerb</li><li>Kein "Rip-and-Replace" für Kunden</li><li>Hohe Anbindungstiefe = hohe Wechselkosten = Kundenbindung</li><li>360°-Sicht ist klar dokumentierter Pain Point</li></ul></div>
+          <div><div class="cons-h">Contra</div><ul><li>Erklärungsbedürftiger Produkttyp im Mittelstand</li><li>Komplexer Sales-Cycle (IT primär)</li><li>10–16 Personenmonate Initial</li><li>Datenmodell-Komplexität hoch</li></ul></div>
+        </div>
+        <p style="font-size: 13px; color: var(--text-secondary); margin: 14px 0 0;"><strong>Erfolgschance:</strong> ★★★ : gut, aber erklärungsbedürftig. <strong>Eher Mittelstand-Top-End (1000+ MA).</strong></p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 1.5rem;">
+      <p class="card-title">Bewertungs-Übersicht (Radar-Diagramm)</p>
+      <div class="chart-wrap" style="height: 400px;"><canvas id="optionsChart"></canvas></div>
+      <p class="source">Eigene Einschätzung basierend auf den vorherigen Analysen. Im Meeting diskutieren und ggf. anpassen.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 9: INTREXX
+       ============================================================ -->
+  <div class="section" id="t9">
+    <h2>Intrexx</h2>
+    <p class="sub">Wann Intrexx Sinn macht und wann nicht.</p>
+
+
+
+    <div class="card">
+      <p class="card-title">Stärken</p>
+      <ul style="font-size: 14px; line-height: 1.7; color: var(--text-secondary); padding-left: 22px;">
+        <li><strong>On-Premise &amp; DSGVO:</strong> Volle Datenkontrolle, deutscher Anbieter</li>
+        <li><strong>Konnektoren:</strong> Etablierte Integrationen zu SAP, IBM Notes, Exchange</li>
+        <li><strong>Etabliert in DACH:</strong> 1,2 Mio. Nutzer, klassische Mittelständler</li>
+        <li><strong>Workflow-Engine:</strong> Solide für klassische BPM-Anwendungen</li>
+        <li><strong>Schnelles internes Tooling:</strong> Für Intranets mit Workflows</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Schwächen</p>
+      <ul style="font-size: 14px; line-height: 1.7; color: var(--text-secondary); padding-left: 22px;">
+        <li><strong>Technologisch eher konservativ:</strong> Proprietäre Template-Sprachen, eigenes UI-Framework</li>
+        <li><strong>Talentpool gering:</strong> Sehr wenige Intrexx-Entwickler am Markt</li>
+        <li><strong>Mobile / KI:</strong> Schwächer als moderne Plattformen : und Mobile/KI sind die wachstumsstärksten Segmente!</li>
+        <li><strong>Kein App-Ökosystem:</strong> Keine Marketplace-Distribution</li>
+        <li><strong>Branding-Hürde:</strong> "Made with Intrexx" hilft Käufern selten</li>
+        <li><strong>Skalierbarkeit als Multi-Tenant-SaaS:</strong> Nicht Kerneinsatzgebiet</li>
+      </ul>
+    </div>
+
+    <div class="verdict verdict-no">
+      <p class="verdict-title">Fazit: Intrexx für ein vermarktbares Produkt-CRM nicht empfohlen</p>
+      <p class="verdict-body">Für ein <strong>verkaufbares Produkt</strong> ist Intrexx vermutlich nicht der beste Stack. Besonders kritisch: <strong>Intrexx ist in Mobile und KI schwach : das sind aber die wachstumsstärksten Sub-Segmente (13 % bzw. 28-36 % CAGR).</strong> Wer Wachstum mitnehmen will, braucht einen Stack, der dort exzelliert. Diese Einschätzung im Team und ggf. mit United Planet validieren.</p>
+    </div>
+
+    <div class="verdict verdict-info" style="margin-top: 10px;">
+      <p class="verdict-title">Wann Intrexx trotzdem Sinn macht</p>
+      <p class="verdict-body"><strong>(1)</strong> Einzelner Kunde nutzt es bereits, CRM-Erweiterung als Service-Projekt;<br>
+      <strong>(2)</strong> Sehr konservative regulierte On-Premise-Branche (Behörden, alte Versicherer);<br>
+      <strong>(3)</strong> Internes Tooling für Bestandskunden (Portal mit CRM-Funktion).<br></p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 10: PERSONAS
+       ============================================================ -->
+  <div class="section" id="t10">
+    <h2>Personas</h2>
+    <p class="sub">Aus Stakeholder- und Pain-Point-Analysen abgeleitet.</p>
+
+    <div class="persona">
+      <div class="persona-avatar" style="background: var(--color-info-bg); color: var(--color-info-text);">MK</div>
+      <div class="persona-body">
+        <p class="persona-name">Markus K., 47 : Vertriebsleiter</p>
+        <p class="persona-role">Mittelständischer Maschinenbauer · 320 MA · DACH-Vertrieb</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Pain:</strong> Excel-Pipeline; Außendienst pflegt nicht; keine Echtzeit-Sicht</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Ziel:</strong> CRM, das Vertrieb wirklich nutzt</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Killerkriterium:</strong> Akzeptanz beim Team</p>
+      </div>
+    </div>
+
+    <div class="persona">
+      <div class="persona-avatar" style="background: var(--color-warning-bg); color: var(--color-warning-text);">SH</div>
+      <div class="persona-body">
+        <p class="persona-name">Sandra H., 52 : IT-Leitung</p>
+        <p class="persona-role">Versicherungs-Mittelständler · 480 MA · DACH/AT</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Pain:</strong> 5 Insellösungen; Daten in Silos; Salesforce zu teuer</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Ziel:</strong> Plattform, die ERP + CRM + Workflows verbindet</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Killerkriterium:</strong> DSGVO, On-Premise-Option, offene Schnittstellen</p>
+      </div>
+    </div>
+
+    <div class="persona">
+      <div class="persona-avatar" style="background: var(--color-success-bg); color: var(--color-success-text);">TB</div>
+      <div class="persona-body">
+        <p class="persona-name">Thomas B., 39 : Außendienstmitarbeiter</p>
+        <p class="persona-role">Bau-/Energiezulieferer · 750 MA · regionaler Vertrieb</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Pain:</strong> Mobile App lahm; Offline kein Zugriff; Doppelerfassung</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Ziel:</strong> Im Auto schnell Kundeninfos sehen, direkt notieren</p>
+        <p style="margin: 4px 0; color: var(--text-secondary);"><strong>Killerkriterium:</strong> Mobile UX, Offline-Modus, Sprachdiktat</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 11: INTERVIEWS
+       ============================================================ -->
+  <div class="section" id="t11">
+    <h2>Interview-Vorbereitung</h2>
+    <p class="sub">15 strukturierte Fragen für 45–60-Minuten-Interviews.</p>
+
+    <div class="interview-cat">Kontext &amp; Status quo</div>
+    <div class="interview-q">1. Beschreiben Sie kurz Ihre Rolle und Ihr typisches Tagesgeschäft mit Kundeninformationen.</div>
+    <div class="interview-q">2. Welche Systeme nutzen Sie heute, um Kundendaten zu verwalten?</div>
+    <div class="interview-q">3. Wie sieht ein typischer Kundenkontakt aus : von Erstkontakt bis Abschluss?</div>
+
+    <div class="interview-cat">Pain Points</div>
+    <div class="interview-q">4. Was sind die drei größten Frustrationen in Ihrem aktuellen Setup?</div>
+    <div class="interview-q">5. Wenn Sie morgen einen freien Wunsch hätten : was würden Sie zuerst ändern?</div>
+    <div class="interview-q">6. Wo verlieren Sie Zeit, die für die eigentliche Kundenarbeit fehlt?</div>
+    <div class="interview-q">7. Was passiert, wenn ein Kollege ausfällt : wo bricht das Wissen ab?</div>
+
+    <div class="interview-cat">Anforderungen &amp; Wünsche</div>
+    <div class="interview-q">8. Welche Informationen über einen Kunden brauchen Sie täglich? Welche selten, aber dringend?</div>
+    <div class="interview-q">9. Mobil oder am Schreibtisch : wo arbeiten Sie mit Kundendaten?</div>
+    <div class="interview-q">10. Welche bestehenden Systeme MÜSSEN angebunden sein?</div>
+
+    <div class="interview-cat">Akzeptanz &amp; Change</div>
+    <div class="interview-q">11. Wenn Ihre Kollegen ein neues System bekommen : was sind ihre größten Sorgen?</div>
+    <div class="interview-q">12. Haben Sie schon einmal eine CRM- oder Software-Einführung erlebt? Was lief gut, was schief?</div>
+
+    <div class="interview-cat">Business-Impact</div>
+    <div class="interview-q">13. Wenn das neue System ideal funktionieren würde : wie würde sich Ihr Arbeitsalltag in 6 Monaten anfühlen?</div>
+    <div class="interview-q">14. Welche Kennzahl würden Sie messen, um zu sagen "es hat sich gelohnt"?</div>
+
+    <div class="interview-cat">Killerkriterien</div>
+    <div class="interview-q">15. Gibt es eine Funktion, ohne die das System für Sie keinen Sinn ergibt?</div>
+
+    <div class="card" style="margin-top: 1.25rem;">
+      <p class="card-title">Wer sollte interviewt werden?</p>
+      <ul style="font-size: 14px; line-height: 1.75; color: var(--text-secondary); padding-left: 22px;">
+        <li><strong>2–3 Vertriebsleute</strong> (Kernnutzer; Akzeptanz entscheidet)</li>
+        <li><strong>1 Vertriebsleitung</strong> (Macht, Forecast-Bedarf)</li>
+        <li><strong>1 Geschäftsführung</strong> (Strategie, Budget, ROI)</li>
+        <li><strong>1 IT-Leitung</strong> (Integration, Security, Skalierung)</li>
+        <li><strong>1 Außendienst</strong> (Mobile UX-Realitätscheck)</li>
+        <li><strong>1 Customer Support</strong> (360°-Sicht-Bedarf)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 12: HYPOTHESEN
+       ============================================================ -->
+  <div class="section" id="t12">
+    <h2>Hypothesen zum Testen</h2>
+    <p class="sub">In Interviews zu validieren. Jede Hypothese ist falsifizierbar.</p>
+
+    <div class="hypothesis"><span class="h-id">H1</span>Im DACH-Mittelstand ist <strong>DSGVO / On-Premise</strong> Killerkriterium für mind. 50 % der Unternehmen.</div>
+    <div class="hypothesis"><span class="h-id">H2</span><strong>Vendor-Lock-in</strong> ist konkret bekannte Sorge bei mind. 40 % der IT-Entscheider.</div>
+    <div class="hypothesis"><span class="h-id">H3</span>Eine <strong>schlanke, rollenbasierte UI</strong> erhöht User-Akzeptanz messbar.</div>
+    <div class="hypothesis"><span class="h-id">H4</span>Mind. 30 % der Zielunternehmen haben <strong>spezialisierte Branchen-Anforderungen</strong>, die Standard-CRMs nicht abdecken.</div>
+    <div class="hypothesis"><span class="h-id">H5</span>Die <strong>Mobile-UX</strong> etablierter Anbieter wird von mind. 60 % der Außendienst-Mitarbeiter als mangelhaft eingestuft.</div>
+    <div class="hypothesis"><span class="h-id">H6</span>Eine <strong>Bündelung CRM + ERP + Workflow</strong> ist attraktiver als Best-of-Breed.</div>
+    <div class="hypothesis"><span class="h-id">H7</span><strong>KI-Bereitschaft</strong> ist vorhanden, aber Datenschutzbedenken bremsen US-Cloud-KI.</div>
+    <div class="hypothesis"><span class="h-id">H8</span>Wichtigster Beschaffungsgrund ist <strong>"weniger Frust"</strong>, nicht "neue Features".</div>
+    <div class="hypothesis"><span class="h-id">H9</span>Mittelständler bevorzugen <strong>Add-ons auf bestehendem CRM</strong> gegenüber Systemwechseln.</div>
+
+    <div class="card" style="margin-top: 1.25rem;">
+      <p class="card-title">Validierungs-Regel</p>
+      <p class="card-body">Pro Hypothese: 6–10 Interviews aus mind. 3 Unternehmen. <strong>Bestätigt</strong> bei ≥70 % Zustimmung; <strong>widerlegt</strong> bei ≤30 %; <strong>unklar</strong> dazwischen.</p>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 13: EMPFEHLUNG
+       ============================================================ -->
+  <div class="section" id="t13">
+    <h2>Empfehlung</h2>
+    <p class="sub">Was ich nach allen Daten als beste Strategie sehe.</p>
+
+    <div class="verdict verdict-yes">
+      <p class="verdict-title">Empfohlene Strategie: Bestandskunde behalten + parallel Produkt aufbauen (Weg 2)</p>
+      <p class="verdict-body">Da wir bereits einen zahlenden Intrexx-Kunden haben, ist unsere Ausgangslage besser als bei einer Neugründung. Unser Bestandskunde finanziert die Wachstumsphase, während wir parallel ein eigenes Produkt entwickeln. <strong>Phase 1: Schnell mit Marketplace-App auf HubSpot oder Salesforce starten</strong>, um Markt-Feedback und Cash-Flow aufzubauen. <strong>Phase 2: Vertikales CRM für die Branche unseres Bestandskunden</strong> : denn dort haben wir bereits Domänen-Wissen und Pilotkunden.</p>
+    </div>
+
+    <h3>Konkreter 5-Schritt-Plan</h3>
+
+    <div class="gap-card"><div class="gap-num">1</div><div class="gap-body"><div class="gap-title">Bestandskunden-Situation analysieren (1 Woche)</div>Welche Branche, welcher Umsatz, welche Verträge, welches IP-Recht? Dokumentieren, was wir aus dem Projekt mitnehmen können : Domänen-Wissen, Sales-Cycle, Stakeholder-Verständnis.</div></div>
+    <div class="gap-card"><div class="gap-num">2</div><div class="gap-body"><div class="gap-title">Stack &amp; Plattformfrage für das NEUE Produkt klären (1 Woche)</div>Bestandskunde bleibt auf Intrexx (kein Wechsel nötig). Aber für das neue Produkt: Modern Web Stack (Next.js/Node.js/PostgreSQL) oder Marketplace-Apps auf HubSpot/Salesforce.</div></div>
+    <div class="gap-card"><div class="gap-num">3</div><div class="gap-body"><div class="gap-title">Markt-Discovery durch Interviews (3–4 Wochen)</div>8–12 Interviews mit Zielkunden in der Branche unseres Bestandskunden. Hypothesen testen. Validieren, ob es genug ähnliche Firmen mit ähnlichen Pain Points gibt.</div></div>
+    <div class="gap-card"><div class="gap-num">4</div><div class="gap-body"><div class="gap-title">Phase 1 : Marketplace-App (3–6 Monate)</div>Eine fokussierte App auf HubSpot oder Salesforce Marketplace mit DSGVO/DATEV/deutschem Reporting-Fokus. Bestandskunde finanziert weiterhin alles. <strong>Ziel: 50–200 Kunden in 12 Monaten, Cashflow positiv.</strong></div></div>
+    <div class="gap-card"><div class="gap-num">5</div><div class="gap-body"><div class="gap-title">Phase 2 : Vertikales CRM (12–18 Monate)</div>Aufbauend auf Phase-1-Wissen und Bestandskunden-Branchenexpertise ein vertikales CRM. Mit Mobile-First + lokaler KI + DSGVO-Kern. Pilotkunden aus Discovery-Phase committed.</div></div>
+
+    <div class="card" style="margin-top: 1.5rem;">
+      <p class="card-title">Was passiert mit dem Bestandskunden?</p>
+      <p class="card-body">Der bleibt auf Intrexx und wird weiter betreut : das ist kein "entweder/oder". Im Gegenteil: Der Bestandskunde ist <strong>Stützpfeiler unserer ganzen Strategie</strong>. Er liefert: stabilen Cashflow während Phase 1, Branchen-Know-how für Phase 2, Pilotkunden-Status für neue Funktionen, und Referenz für ähnliche Firmen. Wir verlieren nichts, wir bauen darauf auf.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Was bei Intrexx-Pflicht für das ganze Geschäft bleibt</p>
+      <p class="card-body">Falls Intrexx aus übergeordneten Gründen für ALLE Projekte gesetzt sein muss (z.B. Konzernvorgabe): Dann gehen wir Weg 1 oder 3 aus dem Tab "Unsere Situation" : Servicegeschäft mit Intrexx ausbauen oder Bestandskundenprojekt als Vorlage nutzen. Das ist anderes Geschäftsmodell als Produktgeschäft, aber wirtschaftlich profitabel.</p>
+    </div>
+
+    <div class="card">
+      <p class="card-title">Im Meeting zu klären</p>
+      <ol style="font-size: 14px; line-height: 1.75; color: var(--text-secondary); padding-left: 22px;">
+        <li><strong>Sind wir bereit, neue Technologien für das neue Produkt zu lernen?</strong></li>
+        <li><strong>In welcher Branche ist unser Bestandskunde : und gibt es dort viele ähnliche Firmen?</strong></li>
+        <li><strong>Welches Geschäftsmodell wollen wir?</strong> Reines Service-Geschäft (Weg 1), Service + Produkt-Aufbau parallel (Weg 2), oder Bestandskunden-Projekt skalieren (Weg 3)?</li>
+        <li><strong>Wer ist der erste Pilotkunde für das neue Produkt?</strong> Vor jeder Entwicklung 1-2 commited</li>
+        <li><strong>Welches Budget steht zur Verfügung?</strong> Initial 6-stellig, langfristig 7-stellig</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB 14: QUELLEN
+       ============================================================ -->
+  <div class="section" id="t14">
+    <h2>Quellen &amp; Methodik</h2>
+    <p class="sub">Alle Behauptungen sind quellenbelegt.</p>
+
+    <div style="font-size: 13px; line-height: 1.85; color: var(--text-secondary);">
+      <p><strong>Marktgröße &amp; Wachstum</strong></p>
+      <ul>
+        <li><a href="https://www.fortunebusinessinsights.com/customer-relationship-management-crm-market-103418" target="_blank">Fortune Business Insights : CRM Market Report 2034</a></li>
+        <li><a href="https://www.mordorintelligence.com/industry-reports/customer-relationship-management-market" target="_blank">Mordor Intelligence : CRM Industry Report</a></li>
+        <li><a href="https://www.statista.com/outlook/tmo/software/enterprise-software/customer-relationship-management-software/worldwide" target="_blank">Statista : CRM Software Forecast Worldwide</a></li>
+        <li><a href="https://www.grandviewresearch.com/industry-analysis/customer-relationship-management-crm-market" target="_blank">Grand View Research : CRM Market 2030</a></li>
+        <li><a href="https://techmarketexperts.com/_news/ai-innovation-and-cloud-adoption-to-drive-global-crm-software-market-to-us144-billion-by-2030/" target="_blank">Industry Experts : CRM to $144B by 2030</a></li>
+        <li><a href="https://www.marketresearchfuture.com/reports/crm-software-market-4943" target="_blank">Market Research Future : CRM Market 2035</a></li>
+      </ul>
+
+      <p style="margin-top: 14px;"><strong>Wachstumssegmente</strong></p>
+      <ul>
+        <li><a href="https://market.us/report/ai-in-crm-market/" target="_blank">Market.us : AI in CRM Market (28% CAGR)</a></li>
+        <li><a href="https://www.researchandmarkets.com/reports/6226660/ai-in-customer-relationship-management-crm" target="_blank">ResearchAndMarkets : AI in CRM 2030 (36% CAGR)</a></li>
+        <li><a href="https://www.thebusinessresearchcompany.com/press-releases/mobile-crm-software-market-230224" target="_blank">The Business Research Company : Mobile CRM Software Market (Pressemitteilung)</a></li>
+        <li><a href="https://www.verifiedmarketreports.com/product/mobile-crm-market/" target="_blank">Verified Market Reports : Mobile CRM Market</a></li>
+        <li><a href="https://www.sltcreative.com/crm-statistics" target="_blank">SLT Creative : Key CRM Statistics 2026</a></li>
+        <li><a href="https://www.marketsandmarkets.com/PressReleases/ai-for-sales-and-marketing.asp" target="_blank">MarketsAndMarkets : AI Sales Marketing $240B</a></li>
+      </ul>
+
+      <p style="margin-top: 14px;"><strong>DACH / Bitkom</strong></p>
+      <ul>
+        <li><a href="https://www.bitkom.org/Presse/Presseinformation/Digitalwirtschaft-bleibt-Stabilitaetsanker" target="_blank">Bitkom : Digitalwirtschaft 2026</a></li>
+        <li><a href="https://www.bitkom.org/Bitkom/Publikationen/Marketing-im-digitalen-Wandel-2026" target="_blank">Bitkom : Marketing im digitalen Wandel 2026</a></li>
+        <li><a href="https://mybusinessfuture.com/bitkom-ki-studie-2026-41-prozent-unternehmen-mittelstand/" target="_blank">Bitkom KI-Studie 2026</a></li>
+      </ul>
+
+      <p style="margin-top: 14px;"><strong>Pain Points &amp; Scheiterraten</strong></p>
+      <ul>
+        <li><a href="https://www.crmsystem.de/news/crm-nachteile-wo-hakt-es-in-der-praxis" target="_blank">CRM System.de : Trovarit + i2s</a></li>
+        <li><a href="https://johnnygrow.com/crm/the-crm-failure-rate-is-55-percent/" target="_blank">Johnny Grow : CRM Failure Rate</a></li>
+        <li>Gartner, Forrester (50–70% Failure Rate)</li>
+      </ul>
+
+      <p style="margin-top: 14px;"><strong>Anbieter &amp; Konkurrenz</strong></p>
+      <ul>
+        <li><a href="https://www.drweb.de/beste-software-finden/crm-system-vergleich-ratgeber/" target="_blank">Dr. Web : CRM-System-Vergleich 2026</a></li>
+        <li><a href="https://investor.salesforce.com/" target="_blank">Salesforce 10-K Filings (R&amp;D-Daten)</a></li>
+        <li><a href="https://ecosystem.hubspot.com/marketplace/apps" target="_blank">HubSpot Marketplace</a></li>
+      </ul>
+
+      <p style="margin-top: 14px;"><strong>Tech-Stack-Bewertung</strong></p>
+      <ul>
+        <li><a href="https://survey.stackoverflow.co/2024/" target="_blank">Stack Overflow Developer Survey 2024</a></li>
+        <li>StepStone/LinkedIn DACH Job-Postings (Volumen-Vergleich)</li>
+      </ul>
+
+      <p style="margin-top: 14px;"><strong>Intrexx</strong></p>
+      <ul>
+        <li><a href="https://www.intrexx.com/de/" target="_blank">United Planet : Intrexx</a></li>
+        <li><a href="https://de.wikipedia.org/wiki/Intrexx" target="_blank">Wikipedia : Intrexx</a></li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top: 1.5rem;">
+      <p class="card-title">Methodische Hinweise</p>
+      <p class="card-body">Öffentliche Quellen heran gezogen. Wo Zahlen zwischen Quellen abweichen, ist die Bandbreite angegeben. Schätzungen sind als solche gekennzeichnet. Vor verbindlichen Entscheidungen sollten zentrale Annahmen mit Anbieter-Direktgesprächen (United Planet, HubSpot Partner-Programm, Salesforce ISV-Programm) validiert werden.</p>
+    </div>
+  </div>
+</div>
+
+<button class="edit-btn" onclick="alert('Diese HTML-Datei kannst du mit jedem Texteditor öffnen (VS Code empfohlen, kostenlos auf code.visualstudio.com). Wichtige Stellen sind im Quellcode mit Kommentaren markiert. Nach Änderungen Datei speichern und mit F5 im Browser neu laden.')">✏️ Bearbeiten-Info</button>
+<button class="print-btn" onclick="window.print()">📄 Als PDF drucken</button>
+
+<script>
+  // ============================================================
+  // TAB-NAVIGATION
+  // ============================================================
+  const tabs = document.querySelectorAll('#tabbar .tab');
+  const sections = document.querySelectorAll('.section');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    sections.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }));
+
+  // ============================================================
+  // SZENARIO-TABS (in Tab "Strategien")
+  // ============================================================
+  document.querySelectorAll('.scenario-tab').forEach(t => t.addEventListener('click', () => {
+    document.querySelectorAll('.scenario-tab').forEach(x => x.classList.remove('active'));
+    document.querySelectorAll('.scenario').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.sc).classList.add('active');
+  }));
+
+  // ============================================================
+  // DARK MODE TOGGLE
+  // ============================================================
+  const modeToggle = document.getElementById('modeToggle');
+  const savedMode = localStorage.getItem('crm-app-darkmode');
+  if (savedMode === 'true') {
+    document.body.classList.add('dark-mode');
+    modeToggle.textContent = '☀️';
+  }
+  modeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    modeToggle.textContent = isDark ? '☀️' : '🌙';
+    localStorage.setItem('crm-app-darkmode', isDark);
+    // Charts neu zeichnen
+    setTimeout(() => location.reload(), 100);
+  });
+
+  // ============================================================
+  // ANIMIERTE ZAHLEN (zählt KPIs hoch)
+  // ============================================================
+  function animateNumbers() {
+    document.querySelectorAll('[data-target]').forEach(el => {
+      const target = parseInt(el.getAttribute('data-target'));
+      const duration = 1500;
+      const start = performance.now();
+      function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.floor(eased * target);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  }
+
+  // ============================================================
+  // CHARTS (alle Diagramme)
+  // ============================================================
+  window.addEventListener('load', function() {
+    if (typeof Chart === 'undefined') return;
+    const isDark = document.body.classList.contains('dark-mode');
+    const TEXT_COLOR = isDark ? '#f0efea' : '#1f1e1c';
+    const GRID_COLOR = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+    const FONT = { family: 'system-ui, sans-serif', size: 12 };
+    Chart.defaults.color = TEXT_COLOR;
+
+    animateNumbers();
+
+    // === MARKT-WACHSTUM ===
+    new Chart(document.getElementById('marketGrowthChart'), {
+      type: 'line',
+      data: {
+        labels: ['2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+        datasets: [{
+          label: 'CRM-Markt global (Mrd. $)',
+          data: [62, 71, 82, 96, 112, 132, 158],
+          borderColor: '#378ADD',
+          backgroundColor: 'rgba(55, 138, 221, 0.15)',
+          tension: 0.35,
+          fill: true,
+          borderWidth: 3,
+          pointRadius: 5,
+          pointBackgroundColor: '#378ADD'
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: v => v + ' Mrd. $', font: FONT }, grid: { color: GRID_COLOR } },
+          x: { ticks: { font: FONT }, grid: { color: GRID_COLOR } }
+        }
+      }
+    });
+
+    // === SEGMENT-WACHSTUM (CAGR-Vergleich) ===
+    new Chart(document.getElementById('segmentGrowthChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Voll-CRM Hauptmarkt', 'Vertikale CRMs', 'Cloud-CRM', 'Mobile CRM', 'CDP / RevOps', 'Marketplace-Apps', 'AI in CRM'],
+        datasets: [{
+          label: 'CAGR %',
+          data: [12, 15, 17, 13, 23, 22, 32],
+          backgroundColor: ['#888780', '#D85A30', '#1D9E75', '#378ADD', '#7F77DD', '#BA7517', '#7F5BD3'],
+          borderRadius: 6
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => ctx.parsed.x + '% jährliches Wachstum' } }
+        },
+        scales: {
+          x: { beginAtZero: true, max: 40, ticks: { callback: v => v + '%', font: FONT }, grid: { color: GRID_COLOR } },
+          y: { ticks: { font: FONT }, grid: { display: false } }
+        }
+      }
+    });
+
+    // === ADOPTION ===
+    new Chart(document.getElementById('adoptionChart'), {
+      type: 'bar',
+      data: {
+        labels: ['USA', 'Schweiz', 'Deutschland', 'Österreich'],
+        datasets: [{ data: [91, 71, 67, 63], backgroundColor: ['#378ADD','#1D9E75','#BA7517','#993C1D'], borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
+        scales: {
+          y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%', font: FONT }, grid: { color: GRID_COLOR } },
+          x: { ticks: { font: FONT }, grid: { display: false } } } }
+    });
+
+    // === VENDORS ===
+    new Chart(document.getElementById('vendorChart'), {
+      type: 'bar',
+      data: {
+        labels: ['HubSpot KMU', 'Salesforce Mittelstand', 'MS Dynamics (Schätz.)', 'SAP (Schätz.)'],
+        datasets: [{ data: [62, 46, 15, 8], backgroundColor: ['#D85A30','#378ADD','#7F77DD','#1D9E75'], borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, max: 70, ticks: { callback: v => v + '%', font: FONT }, grid: { color: GRID_COLOR } },
+          y: { ticks: { font: FONT }, grid: { display: false } } } }
+    });
+
+    // === POWER-INTEREST ===
+    new Chart(document.getElementById('powerInterest'), {
+      type: 'scatter',
+      data: {
+        datasets: [{ label: 'Stakeholder',
+          data: [
+            { x: 9, y: 9, label: 'Geschäftsführung' }, { x: 9, y: 8, label: 'Vertriebsleitung' },
+            { x: 7, y: 9, label: 'Vertrieb / Sales' }, { x: 7, y: 7, label: 'IT-Leitung' },
+            { x: 6, y: 8, label: 'Customer Support' }, { x: 6, y: 7, label: 'Marketing' },
+            { x: 5, y: 6, label: 'Außendienst' }, { x: 4, y: 5, label: 'Sales Operations' },
+            { x: 3, y: 6, label: 'BI / Analytics' }, { x: 2, y: 4, label: 'Controlling' },
+            { x: 2, y: 2, label: 'Lieferanten' }, { x: 1, y: 3, label: 'Externe Dienstleister' }
+          ],
+          backgroundColor: '#378ADD', pointRadius: 10, pointHoverRadius: 14
+        }]
+      },
+      options: { responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw.label + ' (M:' + ctx.raw.x + ', I:' + ctx.raw.y + ')' } } },
+        scales: {
+          x: { title: { display: true, text: 'Macht / Einfluss', font: FONT }, min: 0, max: 10, ticks: { font: FONT }, grid: { color: GRID_COLOR } },
+          y: { title: { display: true, text: 'Interesse / Nutzungsintensität', font: FONT }, min: 0, max: 10, ticks: { font: FONT }, grid: { color: GRID_COLOR } }
+        } }
+    });
+
+    // === PAIN POINTS ===
+    new Chart(document.getElementById('painChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Datenqualität','Performance','Benutzerfreundlichkeit','Datenmigration','Aufwand Datenpflege','Integration','Schnittstellen','Akzeptanz','Laufende Kosten'],
+        datasets: [{ data: [36,22,22,25,23,23,21,18,18], backgroundColor: '#D85A30', borderRadius: 6 }]
+      },
+      options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } },
+        scales: {
+          x: { beginAtZero: true, max: 40, ticks: { callback: v => v + '%', font: FONT }, grid: { color: GRID_COLOR } },
+          y: { ticks: { font: FONT }, grid: { display: false } } } }
+    });
+
+    // === OPTIONS-RADAR ===
+    new Chart(document.getElementById('optionsChart'), {
+      type: 'radar',
+      data: {
+        labels: ['Erfolgschance','Time-to-Market','Investment niedrig','Differenzierung','Skalierbarkeit','Marktreichweite'],
+        datasets: [
+          { label: 'A: Voll-CRM bauen', data: [1,1,1,2,3,2], borderColor: '#D85A30', backgroundColor: 'rgba(216,90,48,0.1)', borderWidth: 2 },
+          { label: 'B: Vertikales CRM', data: [4,3,3,5,4,3], borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.25)', borderWidth: 2.5 },
+          { label: 'C: Marketplace-App', data: [4,5,5,3,5,5], borderColor: '#378ADD', backgroundColor: 'rgba(55,138,221,0.2)', borderWidth: 2.5 },
+          { label: 'D: CDP / RevOps', data: [3,2,2,4,4,3], borderColor: '#7F77DD', backgroundColor: 'rgba(127,119,221,0.1)', borderWidth: 2 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom', labels: { font: FONT, boxWidth: 12, padding: 12 } } },
+        scales: { r: { min: 0, max: 5, ticks: { stepSize: 1, font: { size: 10 } }, pointLabels: { font: FONT }, grid: { color: GRID_COLOR }, angleLines: { color: GRID_COLOR } } }
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
